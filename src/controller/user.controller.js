@@ -1,17 +1,19 @@
 const { Messages } = require("../constants/message.constant");
 const { StatusCode } = require("../constants/status.constant");
+const { StatusEnum, UserRoles } = require("../constants/user.constant");
 const { ERROR, SUCCESS } = require("../helper/response.helper");
 const { User } = require("../model");
 const { createToken } = require("../validators/middleware");
+const { updateUserDetails } = require("../helper/db.helper");
 
 
-exports.loginUser = async (req,res) => {
+const loginUser = async (req,res) => {
     //console.log(req.originalUrl);
     try{
-        let {email,password} = req.body;
+        let {phoneNumber,password} = req.body;
         
 
-        const  user = await User.findOne({email}).select('+password');
+        const  user = await User.findOne({phoneNumber}).select('+password');
         
         if (!user) 
             return ERROR(res, StatusCode.NOT_FOUND,Messages.EMAIL_NOT_REG);
@@ -23,6 +25,7 @@ exports.loginUser = async (req,res) => {
         }
         const accessToken = createToken({
             email: user.email,
+            phoneNumber: user.phoneNumber,
             role: user.role,
             id: user._id,
         });
@@ -39,9 +42,9 @@ exports.loginUser = async (req,res) => {
     }
 }
 // Create a new user
-exports.createUser = async (req, res) => {
+const createUser = async (req, res) => {
     try {
-        const { email,firstName, lastName, phoneNumber, profilePicture,roles } = req.body;
+        const { email,firstName, lastName, phoneNumber, profilePicture,roles,password } = req.body;
 
         // create user profile information
         const newUser = await User({
@@ -49,11 +52,12 @@ exports.createUser = async (req, res) => {
             lastName,
             phoneNumber,
             email,
-            roles
+            roles,
+            password
             //profilePicture
         });
-        const user = await User.find({email : email, status : {$ne : StatusEnum.DELETED}});
-        if (user) {
+        const user = await User.find({phoneNumber : phoneNumber, status : {$ne : StatusEnum.DELETED}});
+        if (user.length != 0) {
             return ERROR(res,StatusCode.BAD_REQUEST,Messages.USER_ALREADY_EXIST);
         }
 
@@ -68,10 +72,20 @@ exports.createUser = async (req, res) => {
 };
 
 // Get all garages
-exports.getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({status : {$ne : StatusEnum.DELETED}});
-        return SUCCESS(res,users)
+      let query = {
+      status: { $ne: StatusEnum.DELETED },
+      roles: { $nin: UserRoles.SUPER_ADMIN },
+    };
+    //filterRoleToAccessUserData(req.user, query);
+    const users = await User.find(query)
+      .populate({
+        path: "shopId",
+        select: "name",
+      })
+      .sort({ createdAt: -1 });
+    return SUCCESS(res, users);
     } catch (e) {
         console.log(e)
         return ERROR(res,StatusCode.SERVER_ERROR,Messages.SERVER_ERROR);
@@ -79,7 +93,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // Get a garage by ID
-exports.getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
     try {
         const user = await User.find({_id : req.params.id, status : {$ne : StatusEnum.DELETED}});
         if (!user) {
@@ -93,7 +107,7 @@ exports.getUserById = async (req, res) => {
 };
 
 // Update a garage by ID
-exports.updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const { email } = req.body;
         if(email)
@@ -114,7 +128,7 @@ exports.updateUser = async (req, res) => {
 };
 
 // Delete a garage by ID
-exports.deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
     try {
         //const deletedGarage = await Garage.findByIdAndDelete(req.params.id);
         let data = { status : StatusEnum.DELETED};
@@ -128,4 +142,12 @@ exports.deleteUser = async (req, res) => {
         console.log(e)
         return ERROR(res,StatusCode.SERVER_ERROR,Messages.SERVER_ERROR);
     }
+};
+module.exports = {
+  loginUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUserById,
+  getAllUsers,
 };

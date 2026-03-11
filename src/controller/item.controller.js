@@ -4,7 +4,7 @@ const { ERROR, SUCCESS } = require("../helper/response.helper");
 const { Item } = require("../model");
 
 
-exports.createItem = async (req, res) => {
+const createItem = async (req, res) => {
   try {
 
     const item = new Item(req.body);
@@ -17,7 +17,7 @@ exports.createItem = async (req, res) => {
   }
 };
 
-exports.getAllItems = async (req, res) => {
+const getAllItems = async (req, res) => {
     try {
   
       const items = await Item.find()
@@ -30,7 +30,7 @@ exports.getAllItems = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-  exports.getItemById = async (req, res) => {
+ const getItemById = async (req, res) => {
     try {
   
       const item = await Item.findById(req.params.id);
@@ -45,7 +45,7 @@ exports.getAllItems = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-  exports.updateItem = async (req, res) => {
+const updateItem = async (req, res) => {
     try {
   
       const item = await Item.findByIdAndUpdate(
@@ -64,7 +64,7 @@ exports.getAllItems = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-  exports.deleteItem = async (req, res) => {
+const deleteItem = async (req, res) => {
     try {
   
       const item = await Item.findByIdAndDelete(req.params.id);
@@ -79,3 +79,11 @@ exports.getAllItems = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+  module.exports={
+    createItem,
+    getAllItems,
+    getItemById,
+    updateItem,
+    deleteItem
+  }

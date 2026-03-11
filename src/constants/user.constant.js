@@ -1,8 +1,7 @@
 const UserRoles = {
     SUPER_ADMIN:'SUPER_ADMIN',
     ADMIN:'ADMIN',
-    WORKSHOP_MANAGER:'WORKSHOP_MANAGER',
-    MECHANIC:'MECHANIC'
+    EMPLOYEE:'EMPLOYEE',
 };
 const StatusEnum = {
     ACTIVE:'ACTIVE', 

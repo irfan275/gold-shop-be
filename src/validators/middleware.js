@@ -1,8 +1,7 @@
 let jwt = require('jsonwebtoken');
 require('dotenv').config();
 let authenticateToken = (req, res, next) => {
-  next();
-  return;
+
   let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
   if (token.startsWith('Bearer ')) {
     // Remove Bearer from string

@@ -25,7 +25,7 @@ const CustomerSchema = new Schema({
     civilId: {
         type: Number,
     },
-    profilePicture: {
+    cardImage: {
         type: String, // You can store the URL of the image
     },
     status: {

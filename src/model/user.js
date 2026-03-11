@@ -17,11 +17,12 @@ const UserSchema = new Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+       
     },
     phoneNumber: {
         type: Number,
+        required: true,
+        unique: true,
     },
     profilePicture: {
         type: String, // You can store the URL of the image
@@ -36,8 +37,8 @@ const UserSchema = new Schema({
         enum: Object.keys(StatusEnum),
         default: 'ACTIVE', // Optional: Set a default value
       },
-    garageIds : {
-        type : [ObjectId],
+    shopId : {
+        type : ObjectId,
         ref : 'Shop'
     },
     roles: {
@@ -116,7 +117,7 @@ module.exports = User;
 const superAdminData = {
     firstName: 'Super',
     lastName : 'admin',
-    email: 'super_admin@autoai.com',
+    phoneNumber: '79972104',
     password: 'Test@123', 
     roles: [UserRoles.SUPER_ADMIN],
   };

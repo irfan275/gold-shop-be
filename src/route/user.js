@@ -1,25 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const {validationRules} = require('../validators/user.validator');
+const { login_validator, register_user_validator, forgot_password_validator, reset_password_validator, update_user_validator } = require('../validators/user.validator');
 const {validate} = require('../validators/validate');
 const { authenticateToken } = require("../validators/middleware");
-const userController = require('../controller/user.controller');
+const {loginUser,createUser, getAllUsers, getUserById, deleteUser, updateUser} = require('../controller/user.controller');
 
-router.post('/login', validationRules.login(),validate,userController.loginUser);
+router.post('/login', login_validator(),validate,loginUser);
 
 // Create a new user
-router.post('/', authenticateToken,validationRules.register_user(),validate,userController.createUser);
+router.post('/', authenticateToken,register_user_validator(),validate,createUser);
 
 // Get all user
-router.get('/', authenticateToken,userController.getAllUsers);
+router.get('/', authenticateToken,getAllUsers);
 
 // Get a user by ID
-router.get('/:id', authenticateToken,userController.getUserById);
+router.get('/:id', authenticateToken,getUserById);
 
 // Update a user by ID
-router.put('/:id', authenticateToken,userController.updateUser);
+router.put('/:id', authenticateToken,updateUser);
 
 // Delete a user by ID
-router.delete('/:id',authenticateToken, userController.deleteUser);
+router.delete('/:id',authenticateToken, deleteUser);
 
 module.exports = router;

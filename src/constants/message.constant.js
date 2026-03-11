@@ -3,7 +3,7 @@ const Messages = {
     NOT_FOUND: 'Resource not found.',
     UNAUTHORIZED: 'Unauthorized access.',
     SERVER_ERROR: 'Internal server error occurred.',
-    EMAIL_NOT_REG : `Email is not registered`,
+    EMAIL_NOT_REG : `User is not registered`,
     LOGIN_INVALID : 'Invalid Email or Password',
     LOGIN_SUCCESS : '',
     EMAIL_PSWD_REQ : 'Please enter your Email and Password.',
@@ -12,7 +12,8 @@ const Messages = {
     POSTAL_CODE_INVALID : 'Postal code must be numeric',
     MUST_BE_ARRAY: 'Roles must be an array',
     USER_ALREADY_EXIST : 'User already exist with this email',
-    USER_NOT_FOUND : 'User not found'
+    USER_NOT_FOUND : 'User not found',
+    CUSTOMER_ALREADY_EXIST: "Customer already exist with this number",
 
 };
 
