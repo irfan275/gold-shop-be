@@ -1,2 +1,3 @@
 module.exports.User = require('./user');
-module.exports.Garage = require('./garage');
+module.exports.Shop = require('./shop');
+module.exports.Customer = require('./customer');

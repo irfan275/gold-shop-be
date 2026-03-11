@@ -37,16 +37,16 @@ app.get("/", (req, res) => {
 })
 
  var user_route = require('./src/route/user');
- var garage_route = require('./src/route/garage');
+ var customer_route = require('./src/route/customer');
 
 const port = process.env.PORT || 3000;
 //const httpsPort = process.env.HTTPSPORT || 3005;
 const basePath = '/api';
 app.use(basePath+'/user', user_route);
-app.use(basePath+'/garage', garage_route);
+app.use(basePath+'/customer', customer_route);
 
 
-httpServer.listen(port, () => console.log(`Auto AI App listening on port ${port}!`))
+httpServer.listen(port, () => console.log(`Gold shop App listening on port ${port}!`))
 //httpsServer.listen(httpsPort, () => console.log(`Example app listening on port ${httpsPort}!`));
 //console.log(httpServer)
 exports.httpServer = httpServer
