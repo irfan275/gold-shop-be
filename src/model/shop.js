@@ -27,21 +27,9 @@ const ShopSchema = new Schema({
         type: String
     },
     address: {
-        postalCode: {
-            type: Number
-        },
-        street: {
-            type: String
-        },
-        city: {
-            type: String
-        },
-        country: {
-            type: String,
-            required: true
-        }
+        type: String
     },
-    phoneNumber: {
+    phone: {
         type: Number
     },
     status: {

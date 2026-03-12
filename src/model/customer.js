@@ -6,21 +6,21 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const CustomerSchema = new Schema({
-    firstName: {
+    name: {
         type: String,
         required: true,
     },
-    lastName: {
-        type: String,
-        required: true,
-    },
+    // lastName: {
+    //     type: String,
+    //     required: true,
+    // },
     email: {
         type: String,
-        required: true,
-        unique: true,
     },
-    phoneNumber: {
+    phone: {
         type: Number,
+         required: true,
+        unique: true,
     },
     civilId: {
         type: Number,

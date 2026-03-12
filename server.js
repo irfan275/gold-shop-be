@@ -39,6 +39,7 @@ app.get("/", (req, res) => {
  var user_route = require('./src/route/user');
  var customer_route = require('./src/route/customer');
  var item_route = require('./src/route/item');
+ var shop_route = require('./src/route/shop');
 
 const port = process.env.PORT || 3000;
 //const httpsPort = process.env.HTTPSPORT || 3005;
@@ -46,6 +47,7 @@ const basePath = '/api';
 app.use(basePath+'/user', user_route);
 app.use(basePath+'/customer', customer_route);
 app.use(basePath+'/item', item_route);
+app.use(basePath+'/shop', shop_route);
 
 
 httpServer.listen(port, () => console.log(`Gold shop App listening on port ${port}!`))

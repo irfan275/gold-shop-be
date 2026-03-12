@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 // Create a new customer
 const createCustomer = async (req, res) => {
   try {
-    const { email, name, phoneNumber, address,civilId } = req.body;
+    const { email, name, phone, address,civilId } = req.body;
 
     // checkUserPrivileges(
     //   res,
@@ -20,7 +20,7 @@ const createCustomer = async (req, res) => {
     // );
 
     let customer = await Customer.findOne({
-      phoneNumber: phoneNumber,
+      phone: phone,
       status: { $ne: StatusEnum.DELETED },
     });
     if (customer) {
@@ -33,7 +33,7 @@ const createCustomer = async (req, res) => {
 
     const newCustomer = await Customer({
       name,
-      phoneNumber,
+      phone,
       email,
       address,
       civilId,
@@ -106,7 +106,7 @@ const getAllCustomerByFilter = async (req, res) => {
               fullName: search,
             },
             {
-              phoneNumber: search,
+              phone: search,
             },
             {
               email: search,
@@ -170,7 +170,7 @@ const updateCustomer = async (req, res) => {
         [
           "name",
           "email",
-          "phoneNumber",
+          "phone",
            "civilId"
         ].includes(key)
       ) {
@@ -200,23 +200,8 @@ const updateCustomer = async (req, res) => {
 const deleteCustomer = async (req, res) => {
   try {
 
-    let query = {
-      _id: req.params.id,
-      status: { $ne: StatusEnum.DELETED }
-    };
-
-    const customer = await Customer.findOne(query);
-
+    const customer = await Customer.findByIdAndDelete(req.params.id);
     if (!customer) {
-      return ERROR(res, StatusCode.NOT_FOUND, Messages.USER_NOT_FOUND);
-    }
-
-    let data = { status: StatusEnum.DELETED };
-    updateUserDetails(req, data, false);
-    const deleted = await Customer.findByIdAndUpdate(req.params.id, data, {
-      new: true,
-    });
-    if (!deleted) {
       return ERROR(res, StatusCode.NOT_FOUND, Messages.USER_NOT_FOUND);
     }
     return SUCCESS(res, {}, "Customer deleted successfully");
@@ -240,7 +225,7 @@ const uploadCustomers = async (req, res) => {
         name: row.name,
         company: row.company,
         email: row.email,
-        phoneNumber: row.phoneNumber,
+        phone: row.phone,
         address: {
           postalCode: row?.postalCode,
           street: row?.street,

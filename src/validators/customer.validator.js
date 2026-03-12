@@ -6,7 +6,7 @@ const { Messages } = require('../constants/message.constant')
     return [
         body('name').exists(),
         body('civilId').exists(),
-        body('phoneNumber').exists(),
+        body('phone').exists(),
     ]
   }
 

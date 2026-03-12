@@ -7,13 +7,14 @@ const { Shop} = require("../model");
 
 
 // Create a new garage
-exports.createShop = async (req, res) => {
+const createShop = async (req, res) => {
     try {
-        const { name, ownerName, address } = req.body;
+        const { name, ownerName, address ,phone} = req.body;
         const newShop = new Shop({
             name,
             ownerName,
             address,
+            phone
         });
         updateUserDetails(req,newShop,true);
         const data = await newShop.save();
@@ -25,7 +26,7 @@ exports.createShop = async (req, res) => {
 };
 
 // Get all shops
-exports.getAllShops = async (req, res) => {
+const getAllShops = async (req, res) => {
     try {
         const shops = await Shop.find({status : {$ne : StatusEnum.DELETED}});
         return SUCCESS(res,shops)
@@ -36,7 +37,7 @@ exports.getAllShops = async (req, res) => {
 };
 
 // Get a garage by ID
-exports.getShopById = async (req, res) => {
+const getShopById = async (req, res) => {
     try {
         const shop = await Shop.find({_id : req.params.id, status : {$ne : StatusEnum.DELETED}});
         if (!shop) {
@@ -50,7 +51,7 @@ exports.getShopById = async (req, res) => {
 };
 
 // Update a shop by ID
-exports.updateShop = async (req, res) => {
+const updateShop = async (req, res) => {
     try {
         updateUserDetails(req,req.body,false);
         const updatedShop = await Shop.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -65,7 +66,7 @@ exports.updateShop = async (req, res) => {
 };
 
 // Delete a shop by ID
-exports.deleteShop = async (req, res) => {
+const deleteShop = async (req, res) => {
     try {
         //const deletedShop = await Shop.findByIdAndDelete(req.params.id);
         let data = { status : StatusEnum.DELETED};
@@ -80,3 +81,10 @@ exports.deleteShop = async (req, res) => {
         return ERROR(res,StatusCode.SERVER_ERROR,Messages.SERVER_ERROR);
     }
 };
+module.exports={
+    createShop,
+    getAllShops,
+    getShopById,
+    deleteShop,
+    updateShop
+}

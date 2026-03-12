@@ -7,16 +7,20 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
-    firstName: {
+    name: {
         type: String,
         required: true,
     },
-    lastName: {
-        type: String,
-        required: true,
-    },
+    // lastName: {
+    //     type: String,
+    //     required: true,
+    // },
     email: {
         type: String,
+       
+    },
+    civilId: {
+        type: Number,
        
     },
     phoneNumber: {
@@ -115,8 +119,8 @@ module.exports = User;
 
 // Define the super admin user data
 const superAdminData = {
-    firstName: 'Super',
-    lastName : 'admin',
+    name: 'Super admin',
+    //lastName : 'admin',
     phoneNumber: '79972104',
     password: 'Test@123', 
     roles: [UserRoles.SUPER_ADMIN],
