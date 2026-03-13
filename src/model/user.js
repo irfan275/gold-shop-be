@@ -45,25 +45,10 @@ const UserSchema = new Schema({
         type : ObjectId,
         ref : 'Shop'
     },
-    roles: {
-        type: [String],
+    role: {
+        type: String,
         enum: UserRoles,
-        validate: [
-            {
-                validator: function(value) {
-                    // Ensure the role array is not empty
-                    return value && value.length > 0;
-                },
-                message: 'At least one role must be provided'
-            },
-            {
-                validator: function(value) {
-                    // Ensure all roles are valid by checking against the enum object
-                    return value.every(role => Object.keys(UserRoles).includes(role));
-                },
-                message: 'Invalid role provided'
-            }
-        ]
+        default: "EMPLOYEE"
     },
     createdBy : {
         type : ObjectId,
@@ -93,7 +78,22 @@ UserSchema.pre('save', async function(next) {
         return next(error);
     }
 });
+// For update
+UserSchema.pre("findOneAndUpdate", async function (next) {
+  try {
+    const update = this.getUpdate();
 
+    if (update.password) {
+      const salt = await bcrypt.genSalt(10);
+      update.password = await bcrypt.hash(update.password, salt);
+      this.setUpdate(update);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 // Method to compare passwords
 UserSchema.methods.comparePassword = async function(candidatePassword) {
     try {
@@ -123,14 +123,14 @@ const superAdminData = {
     //lastName : 'admin',
     phoneNumber: '79972104',
     password: 'Test@123', 
-    roles: [UserRoles.SUPER_ADMIN],
+    role: UserRoles.SUPER_ADMIN,
   };
   
   // Function to create the super admin user
   async function createSuperAdmin() {
     try {
       // Check if the super admin already exists
-      const existingUser = await User.findOne({ roles: UserRoles.SUPER_ADMIN });
+      const existingUser = await User.findOne({ role: UserRoles.SUPER_ADMIN });
       if (existingUser) {
         console.log('Super admin already exists.');
         return;

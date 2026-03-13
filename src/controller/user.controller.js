@@ -44,16 +44,17 @@ const loginUser = async (req,res) => {
 // Create a new user
 const createUser = async (req, res) => {
     try {
-        const { email,firstName, lastName, phoneNumber, profilePicture,roles,password } = req.body;
+        const { email,name, phoneNumber, profilePicture,role,password,shopId,civilId } = req.body;
 
         // create user profile information
         const newUser = await User({
-            firstName,
-            lastName,
+            name,
             phoneNumber,
             email,
-            roles,
-            password
+            role,
+            password,
+            shopId,
+            civilId
             //profilePicture
         });
         const user = await User.find({phoneNumber : phoneNumber, status : {$ne : StatusEnum.DELETED}});
@@ -76,7 +77,7 @@ const getAllUsers = async (req, res) => {
     try {
       let query = {
       status: { $ne: StatusEnum.DELETED },
-      roles: { $nin: UserRoles.SUPER_ADMIN },
+      role: { $ne: UserRoles.SUPER_ADMIN },
     };
     //filterRoleToAccessUserData(req.user, query);
     const users = await User.find(query)
@@ -110,17 +111,17 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { email } = req.body;
-        if(email)
-        {
-            console.log("Email can not updated");
-            delete req.body.email;
-        }
+        // if(email)
+        // {
+        //     console.log("Email can not updated");
+        //     delete req.body.email;
+        // }
         updateUserDetails(req,req.body,false);
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedUser) {
             return SUCCESS(res,StatusCode.BAD_REQUEST,Messages.USER_NOT_FOUND);
         }
-        return SUCCESS(res,updatedGarage)
+        return SUCCESS(res,updatedUser)
     } catch (e) {
         console.log(e)
         return ERROR(res,StatusCode.SERVER_ERROR,Messages.SERVER_ERROR);
@@ -131,9 +132,9 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         //const deletedGarage = await Garage.findByIdAndDelete(req.params.id);
-        let data = { status : StatusEnum.DELETED};
-        updateUserDetails(req,data,false);
-        const deleted = await User.findByIdAndUpdate(req.params.id, data, { new: true });
+        //let data = { status : StatusEnum.DELETED};
+        //updateUserDetails(req,data,false);
+        const deleted = await User.findByIdAndDelete(req.params.id);
         if (!deleted) {
             return res.status(404).json({ message: 'User not found' });
         }

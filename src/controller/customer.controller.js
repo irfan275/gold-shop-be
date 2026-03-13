@@ -71,59 +71,69 @@ const getAllCustomer = async (req, res) => {
 // Get all customers by filter
 const getAllCustomerByFilter = async (req, res) => {
   try {
-    let { status, search } = req.query;
+    let { status, search, page, size } = req.query;
 
     status = status || StatusEnum.ACTIVE;
-    let query = {
-      status: status
-    };
+    page = parseInt(page) || 1;
+    size = parseInt(size) || 1;
+    const skip = (page - 1) * size;
+
+    let query = { status };
     let aggregateQuery = [{ $match: query }];
 
-    if (search) {
+    if (search && search.trim() !== "") {
       if (search.length < 3) {
-        return ERROR(
-          res,
-          StatusCode.BAD_REQUEST,
-          Messages.INVALID_LENGTH_ERROR
-        );
+        return ERROR(res, StatusCode.BAD_REQUEST, Messages.INVALID_LENGTH_ERROR);
       }
-      search = new RegExp(search.replace(/(%20|\s)/gm, ""), "i");
+
+      // Remove spaces from search for fullName matching
+      const cleanedSearch = search.replace(/\s+/g, "");
+
+      // Add field without spaces for name matching
       aggregateQuery.push({
         $addFields: {
-          fullName: {
-            $replaceAll: {
-              input: "$name",
-              find: " ",
-              replacement: "",
-            },
-          },
-        },
+          fullName: { $replaceAll: { input: "$name", find: " ", replacement: "" }},
+          civilIdStr: { $toString: "$civilId" },
+          phoneStr: { $toString: "$phone" }
+        }
       });
+
+      // Match using $regex as string (not JS RegExp)
       aggregateQuery.push({
         $match: {
           $or: [
-            {
-              fullName: search,
-            },
-            {
-              phone: search,
-            },
-            {
-              email: search,
-            },
-          ],
-        },
+            { fullName: { $regex: cleanedSearch, $options: "i" } },
+            { phoneStr: { $regex: search, $options: "i" } },
+            { civilIdStr: { $regex: search, $options: "i" } }
+          ]
+        }
       });
     }
 
+    // Sort by createdAt descending
+    aggregateQuery.push({ $sort: { createdAt: -1 } });
+
+    // Pagination
     aggregateQuery.push({
-      $sort: {
-        createdAt: -1, // Replace -1 with 1 for ascending order
-      },
+      $facet: {
+        data: [{ $skip: skip }, { $limit: size }],
+        totalCount: [{ $count: "count" }]
+      }
     });
 
-    const customers = await Customer.aggregate(aggregateQuery);
-    return SUCCESS(res, customers);
+    const result = await Customer.aggregate(aggregateQuery);
+
+    const customers = result[0]?.data || [];
+    const totalRecords = result[0]?.totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalRecords / size);
+
+    return res.json({
+      data: customers,
+      page,
+      size,
+      totalRecords,
+      totalPages
+    });
   } catch (e) {
     console.log(e);
     return ERROR(res, StatusCode.SERVER_ERROR, Messages.SERVER_ERROR);

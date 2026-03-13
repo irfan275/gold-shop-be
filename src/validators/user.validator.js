@@ -12,10 +12,10 @@ const { Messages } = require('../constants/message.constant')
     return [
       //body('email').exists().isEmail(),
       //body('password').exists(),
-      body('firstName').exists(),
-      body('lastName').exists(),
+      body('name').exists(),
+      //body('lastName').exists(),
       // Validate the 'roles' field
-      body('roles')
+      body('role')
       .exists(), // Check if the field exists
       // .isArray().withMessage('Roles must be an array') // Check if it's an array
       // .custom(value => value.length >= 1).withMessage('At least one role must be provided'), 
@@ -24,7 +24,7 @@ const { Messages } = require('../constants/message.constant')
       //.custom(value => value.length >= 1).withMessage('At least one garage id must be provided'), 
       check('phoneNumber')
       .optional({ checkFalsy: true })
-      .isLength({ min: 8, max: 14 }).withMessage('Phone number must be between 10 and 14 digits')
+      .isLength({ min: 8, max: 14 }).withMessage('Phone number must be between 8 and 14 digits')
       //.matches(/^(\+44\s?7\d{3}|\+44\s?2\d{2,3}|\(?07\d{3}\)?|\(?02\d{2,3}\)?)\s?\d{3,4}\s?\d{3,4}$/).withMessage('Invalid UK phone number format')
     ]
   }
