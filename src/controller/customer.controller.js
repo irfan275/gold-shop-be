@@ -2,7 +2,7 @@ const { Messages } = require("../constants/message.constant");
 const { StatusCode } = require("../constants/status.constant");
 const { StatusEnum, UserRoles } = require("../constants/user.constant");
 const { ERROR, SUCCESS } = require("../helper/response.helper");
-const { updateUserDetails, addGarageDetails } = require("../helper/db.helper");
+const { updateUserDetails } = require("../helper/db.helper");
 const { Customer } = require("../model");
 const { checkUserPrivileges } = require("../utils/roles.utils");
 const mongoose = require("mongoose");
@@ -75,7 +75,7 @@ const getAllCustomerByFilter = async (req, res) => {
 
     status = status || StatusEnum.ACTIVE;
     page = parseInt(page) || 1;
-    size = parseInt(size) || 1;
+    size = parseInt(size) || 50;
     const skip = (page - 1) * size;
 
     let query = { status };
@@ -244,7 +244,7 @@ const uploadCustomers = async (req, res) => {
         },
       };
 
-      addGarageDetails(req, customer);
+      //addGarageDetails(req, customer);
       updateUserDetails(req, customer, true);
       records.push(customer);
     })
