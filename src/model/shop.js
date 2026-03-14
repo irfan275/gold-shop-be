@@ -23,6 +23,10 @@ const ShopSchema = new Schema({
         trim: true,
         required: true
     },
+    shortName: {
+        type: String,
+        unique:true
+    },
     ownerName: {
         type: String
     },

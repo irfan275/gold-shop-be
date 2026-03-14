@@ -8,13 +8,16 @@ const createInvoice = async (req, res) => {
 
   try {
 
-    const { customerId, items, total,discount } = req.body;
+    const { customerId, items, total,discount,shop ,notes,subTotal} = req.body;
 
     const invoice = await Invoice({
       customerId,
       items,
       total,
-      discount
+      shop,
+      discount,
+      notes,
+      subTotal
     });
     updateUserDetails(req, invoice, true);
     const savedInvoice = await invoice.save();
@@ -44,8 +47,9 @@ const getInvoices = async (req, res) => {
       status: { $ne: StatusEnum.DELETED }
     };
     const invoices = await Invoice.find(query)
-      .populate("customerId", "name phone")
+      .populate("customerId", "name phone address civilId")
       .populate("items.itemId", "name")
+      .populate("shop", "name")
       .populate("createdBy", "name")
       .sort({ createdAt: -1 });
 
@@ -72,8 +76,10 @@ const getInvoiceById = async (req, res) => {
       status: { $ne: StatusEnum.DELETED }
     };
     const invoice = await Invoice.findOne(query)
-      .populate("customerId", "name phone")
-      .populate("items.itemId", "name");
+      .populate("customerId", "name phone address civilId")
+      .populate("items.itemId", "name")
+      .populate("shop", "name")
+      .populate("createdBy", "name");
 
     if (!invoice) {
       return res.status(404).json({
@@ -147,6 +153,7 @@ const deleteInvoice = async (req, res) => {
   }
 
 };
+
 
 module.exports={
     createInvoice,

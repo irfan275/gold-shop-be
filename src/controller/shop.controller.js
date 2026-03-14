@@ -4,17 +4,19 @@ const { StatusEnum } = require("../constants/user.constant");
 const { updateUserDetails } = require("../helper/db.helper");
 const { ERROR, SUCCESS } = require("../helper/response.helper");
 const { Shop} = require("../model");
+const Sequence = require("../model/sequence");
 
 
 // Create a new garage
 const createShop = async (req, res) => {
     try {
-        const { name, ownerName, address ,phone} = req.body;
+        const { name, ownerName, address ,phone,shortName} = req.body;
         const newShop = new Shop({
             name,
             ownerName,
             address,
-            phone
+            phone,
+            shortName
         });
         updateUserDetails(req,newShop,true);
         const data = await newShop.save();
@@ -81,10 +83,32 @@ const deleteShop = async (req, res) => {
         return ERROR(res,StatusCode.SERVER_ERROR,Messages.SERVER_ERROR);
     }
 };
+const getInvoiceNumber = async (req, res) => {
+
+  try {
+    const shop = await Shop.findOne({_id : req.params.id, status : {$ne : StatusEnum.DELETED}}).lean();
+    let sequence = await Sequence.findOne(
+      {name:shop.shortName}
+    );
+
+    res.json({ invoiceNumber : `Invoice-${shop.shortName}-${sequence.value+1}`
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Error",
+      error: error.message
+    });
+
+  }
+
+};
 module.exports={
     createShop,
     getAllShops,
     getShopById,
     deleteShop,
-    updateShop
+    updateShop,
+    getInvoiceNumber
 }

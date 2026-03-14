@@ -16,7 +16,7 @@ const populateJobsName = (jobs)=> {
 }
 
 const getNextSequenceValue = async (sequenceName) => {
-  const seq = await Sequence.find();
+ // const seq = await Sequence.find();
   const sequenceDocument = await Sequence.findOneAndUpdate(
     { name: sequenceName },
     { $inc: { value: 1 } },
@@ -24,6 +24,7 @@ const getNextSequenceValue = async (sequenceName) => {
   );
   return sequenceDocument.value;
 };
+
   module.exports = {
     compareObjectIdWithString,
     populateJobsName,

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { StatusEnum } = require("../constants/user.constant");
 const { getNextSequenceValue } = require('../helper/common.helper');
+const { getShopById } = require('../controller/shop.controller');
+const { Shop } = require('.');
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -26,7 +28,10 @@ const InvoiceItemSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-
+  discount: {
+    type: Number,
+    default: 0
+  },
   total: {
     type: Number,
     required: true
@@ -35,7 +40,7 @@ const InvoiceItemSchema = new mongoose.Schema({
 });
 const InvoiceSchema = new mongoose.Schema({
     invoiceNumber: {
-        type: Number,
+        type: String,
         unique: true,
     },
   customerId: {
@@ -43,10 +48,18 @@ const InvoiceSchema = new mongoose.Schema({
     ref: "Customer",
     required: true
   },
-
+shop: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Shop",
+    required: true
+  },
   items: [InvoiceItemSchema],
 
   total: {
+    type: Number,
+    required: true
+  },
+  subTotal: {
     type: Number,
     required: true
   },
@@ -56,10 +69,15 @@ const InvoiceSchema = new mongoose.Schema({
     default: "ACTIVE"
   },
 
-    Discount: {
+    discount: {
         type: Number,
         default : 0
     },
+    notes: {
+        type: String,
+        default : ""
+    },
+
 
     createdBy : {
         type : ObjectId,
@@ -73,10 +91,27 @@ const InvoiceSchema = new mongoose.Schema({
 
 },{ collection: 'Invoice',timestamps: true });
 InvoiceSchema.pre("save", async function (next) {
-  if (this.isNew) {
-    this.invoiceNumber = await getNextSequenceValue("Invoice");
+  try {
+
+    if (!this.isNew) {
+      return next();
+    }
+
+    const shop = await Shop.findById(this.shop);
+
+    if (!shop) {
+      return next(new Error("Shop not found"));
+    }
+
+    const sequence = await getNextSequenceValue(shop.shortName);
+
+    this.invoiceNumber = "Invoice-"+shop.shortName+"-"+sequence;
+
+    next();
+
+  } catch (error) {
+    next(error);
   }
-  next();
 });
 const Invoice = mongoose.model('Invoice', InvoiceSchema);
 module.exports = Invoice;
