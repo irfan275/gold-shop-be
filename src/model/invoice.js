@@ -59,6 +59,9 @@ shop: {
     type: Number,
     required: true
   },
+  invoiceDate: {
+    type: String
+  },
   subTotal: {
     type: Number,
     required: true

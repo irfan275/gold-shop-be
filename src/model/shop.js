@@ -33,6 +33,9 @@ const ShopSchema = new Schema({
     address: {
         type: String
     },
+    address_ar: {
+        type: String
+    },
     phone: {
         type: Number
     },

@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 // Create a new customer
 const createCustomer = async (req, res) => {
   try {
-    const { email, name, phone, address,civilId } = req.body;
+    const { email, name, phone, address,civilId,type,cardExpiry } = req.body;
 
     // checkUserPrivileges(
     //   res,
@@ -37,6 +37,8 @@ const createCustomer = async (req, res) => {
       email,
       address,
       civilId,
+      type,
+      cardExpiry
     });
     updateUserDetails(req, newCustomer, true);
     const savedCustomer = await newCustomer.save();
@@ -172,22 +174,22 @@ const updateCustomer = async (req, res) => {
       return ERROR(res, StatusCode.NOT_FOUND, Messages.USER_NOT_FOUND);
     }
 
-    let updatedData = {};
+     let updatedData = req.body;
 
-    for (let key in req.body) {
-      // Check if the key exists in keysToCheck array
-      if (
-        [
-          "name",
-          "email",
-          "phone",
-           "civilId"
-        ].includes(key)
-      ) {
-        // Key exists in the array
-        updatedData[key] = req.body[key];
-      }
-    }
+    // for (let key in req.body) {
+    //   // Check if the key exists in keysToCheck array
+    //   if (
+    //     [
+    //       "name",
+    //       "email",
+    //       "phone",
+    //        "civilId"
+    //     ].includes(key)
+    //   ) {
+    //     // Key exists in the array
+    //     updatedData[key] = req.body[key];
+    //   }
+    // }
     updateUserDetails(req, updatedData, false);
     const updatedCustomer = await Customer.findByIdAndUpdate(
       req.params.id,

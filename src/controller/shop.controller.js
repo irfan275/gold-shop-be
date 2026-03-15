@@ -10,11 +10,12 @@ const Sequence = require("../model/sequence");
 // Create a new garage
 const createShop = async (req, res) => {
     try {
-        const { name, ownerName, address ,phone,shortName} = req.body;
+        const { name, ownerName, address ,address_ar,phone,shortName} = req.body;
         const newShop = new Shop({
             name,
             ownerName,
             address,
+            address_ar,
             phone,
             shortName
         });
@@ -41,7 +42,7 @@ const getAllShops = async (req, res) => {
 // Get a garage by ID
 const getShopById = async (req, res) => {
     try {
-        const shop = await Shop.find({_id : req.params.id, status : {$ne : StatusEnum.DELETED}});
+        const shop = await Shop.findOne({_id : req.params.id, status : {$ne : StatusEnum.DELETED}});
         if (!shop) {
             return res.status(404).json({ message: 'Shop not found' });
         }

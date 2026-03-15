@@ -25,6 +25,15 @@ const CustomerSchema = new Schema({
     civilId: {
         type: Number,
     },
+    type: {
+        type: String,
+    },
+    cardExpiry: {
+        type: String,
+    },
+    address: {
+        type: String,
+    },
     cardImage: {
         type: String, // You can store the URL of the image
     },

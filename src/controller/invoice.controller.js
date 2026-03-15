@@ -8,7 +8,7 @@ const createInvoice = async (req, res) => {
 
   try {
 
-    const { customerId, items, total,discount,shop ,notes,subTotal} = req.body;
+    const { customerId, items, total,discount,shop ,notes,subTotal,invoiceDate} = req.body;
 
     const invoice = await Invoice({
       customerId,
@@ -17,7 +17,8 @@ const createInvoice = async (req, res) => {
       shop,
       discount,
       notes,
-      subTotal
+      subTotal,
+      invoiceDate
     });
     updateUserDetails(req, invoice, true);
     const savedInvoice = await invoice.save();
@@ -48,7 +49,7 @@ const getInvoices = async (req, res) => {
     };
     const invoices = await Invoice.find(query)
       .populate("customerId", "name phone address civilId")
-      .populate("items.itemId", "name")
+      .populate("items.itemId", "name purity ")
       .populate("shop", "name")
       .populate("createdBy", "name")
       .sort({ createdAt: -1 });
