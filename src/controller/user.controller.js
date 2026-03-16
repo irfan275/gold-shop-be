@@ -27,11 +27,12 @@ const loginUser = async (req,res) => {
             email: user.email,
             phoneNumber: user.phoneNumber,
             role: user.role,
+            shop: user.shopId,
             id: user._id,
         });
         let userData = {
-            ...user._doc,
-            accessToken
+            user: user,
+            accessToken : accessToken
         }
         // Passwords match, login successful
         return SUCCESS(res,userData);

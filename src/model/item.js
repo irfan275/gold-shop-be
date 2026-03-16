@@ -22,6 +22,10 @@ const ItemSchema = new Schema({
         type: Number,
         default : 0
     },
+    type: {
+        type: String,
+        default : 0
+    },
     premium: {
         type: Number,
         default : 0

@@ -78,8 +78,7 @@ const getAllItems = async (req, res) => {
         .populate("createdBy", "name")
         .populate("updatedBy", "name");
   
-      res.json(items);
-  
+      return SUCCESS(res, items);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
