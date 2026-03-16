@@ -28,6 +28,10 @@ const InvoiceItemSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  weight: {
+    type: Number,
+    default: 0
+  },
   discount: {
     type: Number,
     default: 0
@@ -55,27 +59,37 @@ shop: {
   },
   items: [InvoiceItemSchema],
 
-  total: {
-    type: Number,
-    required: true
-  },
-  invoiceDate: {
-    type: String
-  },
   subTotal: {
     type: Number,
     required: true
   },
-
+  vat: {
+    type: Number,
+    required: true
+  },
+  total: {
+    type: Number,
+    required: true
+  },
+  
+  discount: {
+    type: Number,
+    default : 0
+},
+  finalTotal: {
+    type: Number,
+    required: true
+  },
+  
+  invoiceDate: {
+    type: String
+  },
   status: {
     type: String,
     default: "ACTIVE"
   },
 
-    discount: {
-        type: Number,
-        default : 0
-    },
+    
     notes: {
         type: String,
         default : ""

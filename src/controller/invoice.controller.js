@@ -8,7 +8,7 @@ const createInvoice = async (req, res) => {
 
   try {
 
-    const { customerId, items, total,discount,shop ,notes,subTotal,invoiceDate} = req.body;
+    const { customerId, items, subTotal,vat,total,discount,finalTotal,shop ,notes,invoiceDate} = req.body;
 
     const invoice = await Invoice({
       customerId,
@@ -18,7 +18,9 @@ const createInvoice = async (req, res) => {
       discount,
       notes,
       subTotal,
-      invoiceDate
+      invoiceDate,
+      vat,
+      finalTotal
     });
     updateUserDetails(req, invoice, true);
     const savedInvoice = await invoice.save();
