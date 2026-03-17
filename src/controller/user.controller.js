@@ -45,6 +45,13 @@ const loginUser = async (req,res) => {
 // Create a new user
 const createUser = async (req, res) => {
     try {
+        if(req.user.role === 'EMPLOYEE')
+        {
+            res.json({
+                message: "Not Authorized ",
+                data: {}
+              });
+        }
         const { email,name, phoneNumber, profilePicture,role,password,shopId,civilId } = req.body;
 
         // create user profile information
@@ -76,6 +83,13 @@ const createUser = async (req, res) => {
 // Get all garages
 const getAllUsers = async (req, res) => {
     try {
+        if(req.user.role === 'EMPLOYEE')
+        {
+            res.json({
+                message: "Not Authorized ",
+                data: {}
+                });
+        }
       let query = {
       status: { $ne: StatusEnum.DELETED },
       role: { $ne: UserRoles.SUPER_ADMIN },
@@ -97,6 +111,13 @@ const getAllUsers = async (req, res) => {
 // Get a garage by ID
 const getUserById = async (req, res) => {
     try {
+        if(req.user.role === 'EMPLOYEE')
+        {
+            res.json({
+                message: "Not Authorized ",
+                data: {}
+                });
+        }
         const user = await User.find({_id : req.params.id, status : {$ne : StatusEnum.DELETED}});
         if (!user) {
             return SUCCESS(res,StatusCode.BAD_REQUEST,Messages.USER_NOT_FOUND);
@@ -111,6 +132,13 @@ const getUserById = async (req, res) => {
 // Update a garage by ID
 const updateUser = async (req, res) => {
     try {
+        if(req.user.role === 'EMPLOYEE')
+        {
+            res.json({
+                message: "Not Authorized ",
+                data: {}
+                });
+        }
         const { email } = req.body;
         // if(email)
         // {
@@ -132,6 +160,13 @@ const updateUser = async (req, res) => {
 // Delete a garage by ID
 const deleteUser = async (req, res) => {
     try {
+        if(req.user.role === 'EMPLOYEE')
+        {
+            res.json({
+                message: "Not Authorized ",
+                data: {}
+                });
+        }
         //const deletedGarage = await Garage.findByIdAndDelete(req.params.id);
         //let data = { status : StatusEnum.DELETED};
         //updateUserDetails(req,data,false);

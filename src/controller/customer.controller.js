@@ -6,6 +6,7 @@ const { updateUserDetails } = require("../helper/db.helper");
 const { Customer } = require("../model");
 const { checkUserPrivileges } = require("../utils/roles.utils");
 const mongoose = require("mongoose");
+const { validateCardExpiry } = require("../helper/common.helper");
 
 // Create a new customer
 const createCustomer = async (req, res) => {
@@ -161,7 +162,33 @@ const getCustomerById = async (req, res) => {
     return ERROR(res, StatusCode.SERVER_ERROR, Messages.SERVER_ERROR);
   }
 };
+// Get a customer by ID
+const checkCustomerCardExpiryById = async (req, res) => {
+  try {
 
+    let query = {
+      _id: req.params.id,
+      status: { $ne: StatusEnum.DELETED }
+    };
+    const customer = await Customer.findOne(query)
+      .lean();
+    if (!customer) {
+      return ERROR(res, StatusCode.NOT_FOUND, Messages.USER_NOT_FOUND);
+    }
+    const isValid = await validateCardExpiry(customer.cardExpiry);
+
+    if (!isValid) {
+      return res.status(400).json({
+        message: "Invalid or expired date. Format must be dd/MM/yyyy",
+      });
+    }
+  
+    res.json({ message: "Valid expiry date" });
+  } catch (e) {
+    console.log(e);
+    return ERROR(res, StatusCode.SERVER_ERROR, Messages.SERVER_ERROR);
+  }
+};
 // Update a customer by ID
 const updateCustomer = async (req, res) => {
   try {
@@ -302,4 +329,5 @@ module.exports = {
   getCustomerById,
   getAllCustomerByFilter,
   uploadCustomers,
+  checkCustomerCardExpiryById
 };

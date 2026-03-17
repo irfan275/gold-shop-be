@@ -9,6 +9,14 @@ const createInvoice = async (req, res) => {
   try {
 
     const { customerId, items, subTotal,vat,total,discount,finalTotal,shop ,notes,invoiceDate} = req.body;
+    if(req.user.role === 'EMPLOYEE' && req.user.shopId != shop)
+      {
+        res.json({
+          message: "Not Authorized to create Invoice",
+          data: {}
+        });
+    
+      }
 
     const invoice = await Invoice({
       customerId,
@@ -49,6 +57,10 @@ const getInvoices = async (req, res) => {
     let query = {
       status: { $ne: StatusEnum.DELETED }
     };
+    if(req.user.role === 'EMPLOYEE')
+    {
+      query.shop= req.user.shopId;
+    }
     const invoices = await Invoice.find(query)
       .populate("customerId", "name phone address civilId")
       .populate("items.itemId", "name purity ")
@@ -78,6 +90,10 @@ const getInvoiceById = async (req, res) => {
       _id: req.params.id,
       status: { $ne: StatusEnum.DELETED }
     };
+    if(req.user.role === 'EMPLOYEE')
+    {
+      query.shop= req.user.shopId;
+    }
     const invoice = await Invoice.findOne(query)
       .populate("customerId", "name phone address civilId")
       .populate("items.itemId", "name")
@@ -108,7 +124,14 @@ const getInvoiceById = async (req, res) => {
 const updateInvoice = async (req, res) => {
 
   try {
-
+    if(req.user.role === 'EMPLOYEE')
+    {
+      res.json({
+        message: "Not Authorized to update Invoice",
+        data: {}
+      });
+  
+    }
     const invoice = await Invoice.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -136,7 +159,14 @@ const updateInvoice = async (req, res) => {
 const deleteInvoice = async (req, res) => {
 
   try {
-
+    if(req.user.role === 'EMPLOYEE')
+      {
+        res.json({
+          message: "Not Authorized to delete Invoice",
+          data: {}
+        });
+    
+      }
     await Invoice.findByIdAndUpdate(
       req.params.id,
       { status: "DELETED" }

@@ -5,13 +5,15 @@ const {validate} = require('../validators/validate');
 
 const { authenticateToken } = require("../validators/middleware");
 
-const {createCustomer,updateCustomer,getAllCustomer,getCustomerById,deleteCustomer, getAllCustomerByFilter} = require('../controller/customer.controller');
+const {createCustomer,updateCustomer,getAllCustomer,getCustomerById,deleteCustomer, getAllCustomerByFilter, checkCustomerCardExpiryById} = require('../controller/customer.controller');
 
 // Create a new Customer
 router.post('/', authenticateToken,register_customer(),validate,createCustomer);
 
 // Get all Customer
 router.get('/', authenticateToken,getAllCustomerByFilter);
+
+router.get('/checkCardExpiry/:id', authenticateToken,checkCustomerCardExpiryById);
 
 // Get a Customer by ID
 router.get('/:id', authenticateToken,getCustomerById);

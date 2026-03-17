@@ -4,22 +4,23 @@ const { login_validator, register_user_validator, forgot_password_validator, res
 const {validate} = require('../validators/validate');
 const { authenticateToken } = require("../validators/middleware");
 const {loginUser,createUser, getAllUsers, getUserById, deleteUser, updateUser} = require('../controller/user.controller');
+const { restrictToEmployee } = require('../validators/roleMiddleware');
 
 router.post('/login', login_validator(),validate,loginUser);
 
 // Create a new user
-router.post('/', authenticateToken,register_user_validator(),validate,createUser);
+router.post('/', authenticateToken,restrictToEmployee,register_user_validator(),validate,createUser);
 
 // Get all user
-router.get('/', authenticateToken,getAllUsers);
+router.get('/', authenticateToken,restrictToEmployee,getAllUsers);
 
 // Get a user by ID
-router.get('/:id', authenticateToken,getUserById);
+router.get('/:id', authenticateToken,restrictToEmployee,getUserById);
 
 // Update a user by ID
-router.put('/:id', authenticateToken,updateUser);
+router.put('/:id', authenticateToken,restrictToEmployee,updateUser);
 
 // Delete a user by ID
-router.delete('/:id',authenticateToken, deleteUser);
+router.delete('/:id',authenticateToken,restrictToEmployee, deleteUser);
 
 module.exports = router;
