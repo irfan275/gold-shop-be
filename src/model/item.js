@@ -24,7 +24,6 @@ const ItemSchema = new Schema({
     },
     type: {
         type: String,
-        default : 0
     },
     premium: {
         type: Number,

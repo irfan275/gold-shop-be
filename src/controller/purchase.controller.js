@@ -1,7 +1,7 @@
 const { StatusEnum } = require("../constants/user.constant");
 const { getNextSequenceValue } = require("../helper/common.helper");
 const { updateUserDetails } = require("../helper/db.helper");
-const { Invoice } = require("../model");
+const { PurchaseInvoice } = require("../model");
 
 // CREATE INVOICE
 const createInvoice = async (req, res) => {
@@ -18,7 +18,7 @@ const createInvoice = async (req, res) => {
     
       }
 
-    const invoice = await Invoice({
+    const invoice = await PurchaseInvoice({
       customerId,
       items,
       total,
@@ -61,7 +61,7 @@ const getInvoices = async (req, res) => {
     {
       query.shop= req.user.shopId;
     }
-    const invoices = await Invoice.find(query)
+    const invoices = await PurchaseInvoice.find(query)
       .populate("customerId", "name phone address civilId")
       .populate("items.itemId", "name purity ")
       .populate("shop", "name")
@@ -94,7 +94,7 @@ const getInvoiceById = async (req, res) => {
     {
       query.shop= req.user.shopId;
     }
-    const invoice = await Invoice.findOne(query)
+    const invoice = await PurchaseInvoice.findOne(query)
       .populate("customerId", "name phone address civilId")
       .populate("items.itemId", "name")
       .populate("shop", "name")
@@ -124,7 +124,7 @@ const getInvoiceById = async (req, res) => {
 const updateInvoice = async (req, res) => {
 
   try {
-    if(req.user.role === 'EMPLOYEE'&& req.user.shopId != req.body.shop)
+    if(req.user.role === 'EMPLOYEE' && req.user.shopId != req.body.shop)
     {
       res.json({
         message: "Not Authorized to update Invoice",
@@ -132,7 +132,7 @@ const updateInvoice = async (req, res) => {
       });
   
     }
-    const invoice = await Invoice.findByIdAndUpdate(
+    const invoice = await PurchaseInvoice.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
@@ -167,7 +167,7 @@ const deleteInvoice = async (req, res) => {
         });
     
       }
-    await Invoice.findByIdAndUpdate(
+    await PurchaseInvoice.findByIdAndUpdate(
       req.params.id,
       { status: "DELETED" }
     );

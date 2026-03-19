@@ -88,11 +88,34 @@ const getInvoiceNumber = async (req, res) => {
 
   try {
     const shop = await Shop.findOne({_id : req.params.id, status : {$ne : StatusEnum.DELETED}}).lean();
+    let seqName = `INV-${shop.shortName}`;
     let sequence = await Sequence.findOne(
-      {name:shop.shortName}
+      {name:seqName}
     );
+    let sequenceNumber = !sequence? 0 : sequence.value;
+    res.json({ invoiceNumber : `${seqName}-${sequenceNumber+1}`
+    });
 
-    res.json({ invoiceNumber : `Invoice-${shop.shortName}-${sequence.value+1}`
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Error",
+      error: error.message
+    });
+
+  }
+
+};
+const getInvoiceNumberForPurchase = async (req, res) => {
+
+  try {
+    const shop = await Shop.findOne({_id : req.params.id, status : {$ne : StatusEnum.DELETED}}).lean();
+    let seqName = `PV-${shop.shortName}`;
+    let sequence = await Sequence.findOne(
+      {name:seqName}
+    );
+    let sequenceNumber = !sequence? 0 : sequence.value;
+    res.json({ invoiceNumber : `${seqName}-${sequenceNumber+1}`
     });
 
   } catch (error) {
@@ -111,5 +134,6 @@ module.exports={
     getShopById,
     deleteShop,
     updateShop,
-    getInvoiceNumber
+    getInvoiceNumber,
+    getInvoiceNumberForPurchase
 }

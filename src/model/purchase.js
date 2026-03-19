@@ -44,7 +44,7 @@ type:{
   }
 
 });
-const InvoiceSchema = new mongoose.Schema({
+const PurchaseSchema = new mongoose.Schema({
     invoiceNumber: {
         type: String,
         unique: true,
@@ -108,8 +108,8 @@ shop: {
         //required : true
     },
 
-},{ collection: 'Invoice',timestamps: true });
-InvoiceSchema.pre("save", async function (next) {
+},{ collection: 'Purchase',timestamps: true });
+PurchaseSchema.pre("save", async function (next) {
   try {
 
     if (!this.isNew) {
@@ -121,10 +121,10 @@ InvoiceSchema.pre("save", async function (next) {
     if (!shop) {
       return next(new Error("Shop not found"));
     }
-    let seqName = `INV-${shop.shortName}`;
-    const sequence = await getNextSequenceValue(seqName);
 
-    this.invoiceNumber = seqName+"-"+sequence;
+    const sequence = await getNextSequenceValue('PV-'+shop.shortName);
+
+    this.invoiceNumber = "PV-"+shop.shortName+"-"+sequence;
 
     next();
 
@@ -132,5 +132,5 @@ InvoiceSchema.pre("save", async function (next) {
     next(error);
   }
 });
-const Invoice = mongoose.model('Invoice', InvoiceSchema);
-module.exports = Invoice;
+const PurchaseInvoice = mongoose.model('Purchase', PurchaseSchema);
+module.exports = PurchaseInvoice;

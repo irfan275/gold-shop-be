@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {createShop,deleteShop,getAllShops,getShopById,updateShop, getInvoiceNumber} = require("../controller/shop.controller");
+const {createShop,deleteShop,getAllShops,getShopById,updateShop, getInvoiceNumber, getInvoiceNumberForPurchase} = require("../controller/shop.controller");
 
 
 const { authenticateToken } = require("../validators/middleware");
@@ -8,6 +8,7 @@ const { authenticateToken } = require("../validators/middleware");
 router.post("/", authenticateToken,createShop);
 router.get("/", authenticateToken,getAllShops);
 router.get("/sequence/:id",authenticateToken, getInvoiceNumber);
+router.get("/purchase/sequence/:id",authenticateToken, getInvoiceNumberForPurchase);
 router.get("/:id", authenticateToken,getShopById);
 router.put("/:id", authenticateToken,updateShop);
 router.delete("/:id", authenticateToken,deleteShop);

@@ -36,11 +36,12 @@ app.get("/", (req, res) => {
 	})
 })
 
- var user_route = require('./src/route/user');
- var customer_route = require('./src/route/customer');
- var item_route = require('./src/route/item');
- var shop_route = require('./src/route/shop');
-  var invoice_route = require('./src/route/invoice');
+var user_route = require('./src/route/user');
+var customer_route = require('./src/route/customer');
+var item_route = require('./src/route/item');
+var shop_route = require('./src/route/shop');
+var invoice_route = require('./src/route/invoice');
+var purchase_route = require('./src/route/purchase');
 
 const port = process.env.PORT || 3000;
 //const httpsPort = process.env.HTTPSPORT || 3005;
@@ -50,6 +51,7 @@ app.use(basePath+'/customer', customer_route);
 app.use(basePath+'/item', item_route);
 app.use(basePath+'/shop', shop_route);
 app.use(basePath+'/invoice', invoice_route);
+app.use(basePath+'/purchase', purchase_route);
 
 
 httpServer.listen(port, () => console.log(`Gold shop App listening on port ${port}!`))
