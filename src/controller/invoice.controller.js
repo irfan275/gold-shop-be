@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const { StatusEnum } = require("../constants/user.constant");
 const { getNextSequenceValue } = require("../helper/common.helper");
 const { updateUserDetails } = require("../helper/db.helper");
@@ -9,7 +10,7 @@ const createInvoice = async (req, res) => {
   try {
 
     const { customerId, items, subTotal,vat,total,discount,finalTotal,shop ,notes,invoiceDate} = req.body;
-    if(req.user.role === 'EMPLOYEE' && req.user.shopId != shop)
+    if(req.user.role === 'EMPLOYEE' && req.user.shop != shop)
       {
         res.json({
           message: "Not Authorized to create Invoice",
@@ -59,7 +60,7 @@ const getInvoices = async (req, res) => {
     };
     if(req.user.role === 'EMPLOYEE')
     {
-      query.shop= req.user.shopId;
+      query.shop= new mongoose.Types.ObjectId(String(req.user.shop));
     }
     const invoices = await Invoice.find(query)
       .populate("customerId", "name phone address civilId")
@@ -92,11 +93,11 @@ const getInvoiceById = async (req, res) => {
     };
     if(req.user.role === 'EMPLOYEE')
     {
-      query.shop= req.user.shopId;
+      query.shop= new mongoose.Types.ObjectId(String(req.user.shop));
     }
     const invoice = await Invoice.findOne(query)
       .populate("customerId", "name phone address civilId")
-      .populate("items.itemId", "name")
+      .populate("items.itemId", "name type")
       .populate("shop", "name")
       .populate("createdBy", "name");
 
@@ -124,7 +125,7 @@ const getInvoiceById = async (req, res) => {
 const updateInvoice = async (req, res) => {
 
   try {
-    if(req.user.role === 'EMPLOYEE'&& req.user.shopId != req.body.shop)
+    if(req.user.role === 'EMPLOYEE'&& req.user.shop != req.body.shop)
     {
       res.json({
         message: "Not Authorized to update Invoice",
