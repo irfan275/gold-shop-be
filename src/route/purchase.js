@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {createInvoice,getInvoices,getInvoiceById,deleteInvoice,updateInvoice}= require('../controller/purchase.controller')
+const {createInvoice,getInvoices,getInvoiceById,deleteInvoice,updateInvoice, getInvoicesByFilter}= require('../controller/purchase.controller')
 const { authenticateToken } = require('../validators/middleware');
 
 
@@ -11,7 +11,7 @@ router.post("/", authenticateToken,createInvoice);
 
 
 // GET ALL
-router.get("/",authenticateToken, getInvoices);
+router.get("/",authenticateToken, getInvoicesByFilter);
 
 
 

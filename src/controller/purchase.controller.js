@@ -119,7 +119,52 @@ const getInvoiceById = async (req, res) => {
   }
 
 };
+const getInvoicesByFilter = async (req, res) => {
+  try {
+    const { invoiceNumber, customerId, page = 1, limit = 10 } = req.query;
 
+    let query = {
+      status: { $ne: StatusEnum.DELETED }
+    };
+    if(req.user.role === 'EMPLOYEE')
+    {
+      query.shop= new mongoose.Types.ObjectId(String(req.user.shop));
+    }
+
+    // 🔥 Priority logic
+    if (invoiceNumber) {
+      query.invoiceNumber = { $regex: invoiceNumber, $options: "i" };
+    } else if (customerId) {
+      query.customerId = new mongoose.Types.ObjectId(customerId);
+    }
+
+    // ✅ Pagination calc
+    const skip = (page - 1) * limit;
+
+    // ✅ Fetch data
+    const invoices = await PurchaseInvoice.find(query)
+        .populate("customerId", "name phone address civilId")
+      .populate("items.itemId", "name type")
+      .populate("shop", "name")
+      .populate("createdBy", "name")
+      .skip(skip)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    // ✅ Total count
+    const total = await PurchaseInvoice.countDocuments(query);
+
+    res.json({
+      data: invoices,
+      totalRecords:total,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit)
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // UPDATE INVOICE
 const updateInvoice = async (req, res) => {
@@ -194,5 +239,6 @@ module.exports={
     getInvoiceById,
     getInvoices,
     updateInvoice,
-    deleteInvoice
+    deleteInvoice,
+    getInvoicesByFilter
 }
