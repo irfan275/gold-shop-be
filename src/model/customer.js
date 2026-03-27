@@ -20,10 +20,11 @@ const CustomerSchema = new Schema({
     phone: {
         type: Number,
          required: true,
-        unique: true,
+        
     },
     civilId: {
         type: Number,
+        unique: true,
     },
     type: {
         type: String,

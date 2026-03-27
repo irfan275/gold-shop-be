@@ -21,7 +21,7 @@ const createCustomer = async (req, res) => {
     // );
 
     let customer = await Customer.findOne({
-      phone: phone,
+      civilId: civilId,
       status: { $ne: StatusEnum.DELETED },
     });
     if (customer) {
