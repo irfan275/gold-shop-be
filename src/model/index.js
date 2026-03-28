@@ -4,3 +4,4 @@ module.exports.Customer = require('./customer');
 module.exports.Item = require('./item');
 module.exports.Invoice = require('./invoice');
 module.exports.PurchaseInvoice = require('./purchase');
+module.exports.ReceiptInvoice = require('./receipt');
