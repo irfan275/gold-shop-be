@@ -44,6 +44,7 @@ var invoice_route = require('./src/route/invoice');
 var purchase_route = require('./src/route/purchase');
 var receipt_route = require('./src/route/receipt');
 var gold_payment_route = require('./src/route/gold_payment');
+var gold_receive_route = require('./src/route/gold_receive');
 
 const port = process.env.PORT || 3000;
 //const httpsPort = process.env.HTTPSPORT || 3005;
@@ -56,6 +57,7 @@ app.use(basePath+'/invoice', invoice_route);
 app.use(basePath+'/purchase', purchase_route);
 app.use(basePath+'/receipt', receipt_route);
 app.use(basePath+'/goldpayment', gold_payment_route);
+app.use(basePath+'/goldreceive', gold_receive_route);
 
 
 httpServer.listen(port, () => console.log(`Gold shop App listening on port ${port}!`))

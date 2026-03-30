@@ -6,3 +6,4 @@ module.exports.Invoice = require('./invoice');
 module.exports.PurchaseInvoice = require('./purchase');
 module.exports.ReceiptInvoice = require('./receipt');
 module.exports.GoldPaymentInvoice = require('./gold_payment');
+module.exports.GoldReceiveInvoice = require('./gold_receive');
