@@ -1,6 +1,6 @@
 const { Messages } = require("../constants/message.constant");
 const { StatusCode } = require("../constants/status.constant");
-const { StatusEnum } = require("../constants/user.constant");
+const { StatusEnum, UserRoles } = require("../constants/user.constant");
 const { updateUserDetails } = require("../helper/db.helper");
 const { ERROR, SUCCESS } = require("../helper/response.helper");
 const { Shop} = require("../model");
@@ -9,6 +9,12 @@ const Sequence = require("../model/sequence");
 
 // Create a new garage
 const createShop = async (req, res) => {
+   if(req.user.role !== UserRoles.SUPER_ADMIN){
+    res.json({
+          message: "Not Authorized to create shop",
+          data: {}
+        });
+   }
     try {
         const { name, ownerName, address ,address_ar,phone,shortName} = req.body;
         const newShop = new Shop({
@@ -55,6 +61,12 @@ const getShopById = async (req, res) => {
 
 // Update a shop by ID
 const updateShop = async (req, res) => {
+  if(req.user.role !== UserRoles.SUPER_ADMIN){
+    res.json({
+          message: "Not Authorized to create shop",
+          data: {}
+        });
+   }
     try {
         updateUserDetails(req,req.body,false);
         const updatedShop = await Shop.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -70,6 +82,12 @@ const updateShop = async (req, res) => {
 
 // Delete a shop by ID
 const deleteShop = async (req, res) => {
+  if(req.user.role !== UserRoles.SUPER_ADMIN){
+    res.json({
+          message: "Not Authorized to create shop",
+          data: {}
+        });
+   }
     try {
         //const deletedShop = await Shop.findByIdAndDelete(req.params.id);
         let data = { status : StatusEnum.DELETED};
