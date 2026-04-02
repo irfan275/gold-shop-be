@@ -86,10 +86,12 @@ const transporter = nodemailer.createTransport({
 // API endpoint to trigger backup
 //app.get('/backup', async (req, res) => 
 const runBackup = () => {
+  console.log("process started");
   const date = new Date().toISOString().replace(/[:.]/g, '-');
   const archivePath = path.join(BACKUP_DIR, `mongo-backup-${date}.zip`);
 
   exec(`"${process.env.MONGO_TOOL_PATH}" --uri="${MONGO_URI}" --out="${DUMP_DIR}"`, (err, stdout, stderr) => {
+    console.log("command executed");
     if (err) {
       console.error('Backup failed:', stderr);
       return;
@@ -100,7 +102,8 @@ const runBackup = () => {
       console.error('Dump folder is empty or missing!');
       return;
     }
-
+    console.log("command dump dir found");
+    
     const output = fs.createWriteStream(archivePath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
