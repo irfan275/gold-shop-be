@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"invoiceNumber":{"$numberInt":"1"}},"name":"invoiceNumber_1","background":true,"unique":true}],"uuid":"396c8772c0e54bb1b595e8d071b056c3","collectionName":"GoldReceive","type":"collection"}

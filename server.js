@@ -88,7 +88,7 @@ app.get('/backup', async (req, res) => {
   const archivePath = path.join(BACKUP_DIR, `mongo-backup-${date}.zip`);
 
   // Step 1: Run mongodump
-  exec(`"C:\\Program Files\\MongoDB\\mongodb-tools\\bin\\mongodump.exe" --uri="${MONGO_URI}" --out=${DUMP_DIR}`, (err, stdout, stderr) => {
+  exec(`"${process.env.MONGO_TOOL_PATH}" --uri="${MONGO_URI}" --out=${DUMP_DIR}`, (err, stdout, stderr) => {
     if (err) {
       console.error('Backup failed:', stderr);
       return res.status(500).send('Backup failed');
@@ -100,9 +100,29 @@ app.get('/backup', async (req, res) => {
 
     output.on('close', async () => {
       console.log(`Backup created: ${archivePath} (${archive.pointer()} bytes)`);
+		// Step 3: Clean old backups, keep latest 3
+		let files = fs.readdirSync(BACKUP_DIR)
+			.filter(f => f.endsWith('.zip'))
+			.map(f => ({
+			name: f,
+			time: fs.statSync(path.join(BACKUP_DIR, f)).mtime.getTime()
+			}))
+			.sort((a, b) => b.time - a.time); // newest first
 
+		if (files.length > 3) {
+			const toDelete = files.slice(3);
+			toDelete.forEach(f => {
+			fs.unlinkSync(path.join(BACKUP_DIR, f.name));
+			console.log('Deleted old backup:', f.name);
+			});
+		}
       // Step 3: Send email
       try {
+		// Step 5: Remove temporary dump folder
+        if (fs.existsSync(DUMP_DIR)) {
+			fs.rmSync(DUMP_DIR, { recursive: true, force: true });
+			console.log('Removed temporary dump folder');
+		  }
         await transporter.sendMail({
           from: '"Mongo Backup" <your@gmail.com>',
           to: EMAIL_TO,
