@@ -1,7 +1,8 @@
 module.exports = {
   apps : [{
+    name: "server",
     script: './server.js',
-    watch: '.',
+    watch: true,
     ignore_watch: [
         "dump",
         "backups",
