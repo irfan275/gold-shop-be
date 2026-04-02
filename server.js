@@ -85,46 +85,53 @@ const transporter = nodemailer.createTransport({
 
 // API endpoint to trigger backup
 //app.get('/backup', async (req, res) => 
-  const runBackup = () => {
+const runBackup = () => {
   const date = new Date().toISOString().replace(/[:.]/g, '-');
   const archivePath = path.join(BACKUP_DIR, `mongo-backup-${date}.zip`);
 
-  // Step 1: Run mongodump
-  exec(`"${process.env.MONGO_TOOL_PATH}" --uri="${MONGO_URI}" --out=${DUMP_DIR}`, (err, stdout, stderr) => {
+  exec(`"${process.env.MONGO_TOOL_PATH}" --uri="${MONGO_URI}" --out="${DUMP_DIR}"`, (err, stdout, stderr) => {
     if (err) {
       console.error('Backup failed:', stderr);
-      //return res.status(500).send('Backup failed');
+      return;
     }
 
-    // Step 2: Compress folder
+    // ✅ Ensure dump folder exists and has data
+    if (!fs.existsSync(DUMP_DIR) || fs.readdirSync(DUMP_DIR).length === 0) {
+      console.error('Dump folder is empty or missing!');
+      return;
+    }
+
     const output = fs.createWriteStream(archivePath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
+    archive.pipe(output);
+
+    // ✅ FIX: add trailing slash
+    archive.directory(DUMP_DIR + '/', false);
+
+    archive.finalize();
+
     output.on('close', async () => {
       console.log(`Backup created: ${archivePath} (${archive.pointer()} bytes)`);
-		// Step 3: Clean old backups, keep latest 3
-		let files = fs.readdirSync(BACKUP_DIR)
-			.filter(f => f.endsWith('.zip'))
-			.map(f => ({
-			name: f,
-			time: fs.statSync(path.join(BACKUP_DIR, f)).mtime.getTime()
-			}))
-			.sort((a, b) => b.time - a.time); // newest first
 
-		if (files.length > 3) {
-			const toDelete = files.slice(3);
-			toDelete.forEach(f => {
-			fs.unlinkSync(path.join(BACKUP_DIR, f.name));
-			console.log('Deleted old backup:', f.name);
-			});
-		}
-      // Step 3: Send email
+      // ✅ Clean old backups (keep 3)
+      let files = fs.readdirSync(BACKUP_DIR)
+        .filter(f => f.endsWith('.zip'))
+        .map(f => ({
+          name: f,
+          time: fs.statSync(path.join(BACKUP_DIR, f)).mtime.getTime()
+        }))
+        .sort((a, b) => b.time - a.time);
+
+      if (files.length > 3) {
+        files.slice(3).forEach(f => {
+          fs.unlinkSync(path.join(BACKUP_DIR, f.name));
+          console.log('Deleted old backup:', f.name);
+        });
+      }
+
       try {
-		// Step 5: Remove temporary dump folder
-        if (fs.existsSync(DUMP_DIR)) {
-			fs.rmSync(DUMP_DIR, { recursive: true, force: true });
-			console.log('Removed temporary dump folder');
-		  }
+        // ✅ SEND EMAIL FIRST
         await transporter.sendMail({
           from: '"Mongo Backup" <your@gmail.com>',
           to: EMAIL_TO,
@@ -134,25 +141,27 @@ const transporter = nodemailer.createTransport({
             { filename: path.basename(archivePath), path: archivePath }
           ]
         });
-        console.log('Backup created and emailed successfully!');
+
+        console.log('Email sent successfully');
+
+        // ✅ THEN delete dump folder
+        if (fs.existsSync(DUMP_DIR)) {
+          fs.rmSync(DUMP_DIR, { recursive: true, force: true });
+          console.log('Removed temporary dump folder');
+        }
+
       } catch (emailErr) {
         console.error('Email failed:', emailErr);
-        //res.status(500).send('Backup created but email failed');
       }
     });
 
     archive.on('error', err => {
       console.error('Compression error:', err);
-      //res.status(500).send('Compression failed');
     });
-
-    archive.pipe(output);
-    archive.directory(DUMP_DIR, false);
-    archive.finalize();
   });
-}
+};
 // Runs at 10:00 PM every day
-cron.schedule('0 11 * * *', () => {
+cron.schedule('0 12 * * *', () => {
   console.log('Running scheduled backup at 10 PM...');
   runBackup();
 });
