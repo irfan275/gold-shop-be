@@ -76,7 +76,11 @@ if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR);
 
 // Setup nodemailer (Gmail example)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  //service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  family: 4,
   auth: {
     user: 'rana.irfan.qau@gmail.com',
     pass: 'gbvs zkrq lujg aydh' // use App Password
@@ -103,7 +107,7 @@ const runBackup = () => {
       return;
     }
     console.log("command dump dir found");
-    
+
     const output = fs.createWriteStream(archivePath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
