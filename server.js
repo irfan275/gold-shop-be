@@ -12,6 +12,7 @@ const { exec } = require('child_process');
 const nodemailer = require('nodemailer');
 const archiver = require('archiver');
 const path = require('path');
+const cron = require('node-cron');
 
 require('dotenv').config();
 
@@ -83,7 +84,8 @@ const transporter = nodemailer.createTransport({
 });
 
 // API endpoint to trigger backup
-app.get('/backup', async (req, res) => {
+//app.get('/backup', async (req, res) => 
+  const runBackup = () => {
   const date = new Date().toISOString().replace(/[:.]/g, '-');
   const archivePath = path.join(BACKUP_DIR, `mongo-backup-${date}.zip`);
 
@@ -91,7 +93,7 @@ app.get('/backup', async (req, res) => {
   exec(`"${process.env.MONGO_TOOL_PATH}" --uri="${MONGO_URI}" --out=${DUMP_DIR}`, (err, stdout, stderr) => {
     if (err) {
       console.error('Backup failed:', stderr);
-      return res.status(500).send('Backup failed');
+      //return res.status(500).send('Backup failed');
     }
 
     // Step 2: Compress folder
@@ -132,22 +134,32 @@ app.get('/backup', async (req, res) => {
             { filename: path.basename(archivePath), path: archivePath }
           ]
         });
-        res.send('Backup created and emailed successfully!');
+        console.log('Backup created and emailed successfully!');
       } catch (emailErr) {
         console.error('Email failed:', emailErr);
-        res.status(500).send('Backup created but email failed');
+        //res.status(500).send('Backup created but email failed');
       }
     });
 
     archive.on('error', err => {
       console.error('Compression error:', err);
-      res.status(500).send('Compression failed');
+      //res.status(500).send('Compression failed');
     });
 
     archive.pipe(output);
     archive.directory(DUMP_DIR, false);
     archive.finalize();
   });
+}
+// Runs at 10:00 PM every day
+cron.schedule('0 11 * * *', () => {
+  console.log('Running scheduled backup at 10 PM...');
+  runBackup();
+});
+
+app.get('/backup', (req, res) => {
+  runBackup();
+  res.send('Backup started');
 });
 
 httpServer.listen(port, () => console.log(`Gold shop App listening on port ${port}!`))
