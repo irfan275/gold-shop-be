@@ -5,7 +5,9 @@ module.exports = {
     watch: true,
     ignore_watch: [
         "dump",
+        "dump/*",
         "backups",
+        "backups/*",
         "node_modules"
       ]
   }]
