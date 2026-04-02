@@ -67,7 +67,7 @@ app.use(basePath+'/goldreceive', gold_receive_route);
 const MONGO_URI = process.env.MONGO_URL;
 const DUMP_DIR = path.join(__dirname, 'dump');
 const BACKUP_DIR = path.join(__dirname, 'backups');
-const EMAIL_TO = 'rana.irfan.qau@gmail.com';
+const EMAIL_TO = process.env.EMAIL;
 
 // Ensure backup folder exists
 if (!fs.existsSync(DUMP_DIR)) fs.mkdirSync(DUMP_DIR);
