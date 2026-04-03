@@ -76,11 +76,7 @@ if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR);
 
 // Setup nodemailer (Gmail example)
 const transporter = nodemailer.createTransport({
-  //service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  family: 4,
+  service: 'gmail',
   auth: {
     user: 'rana.irfan.qau@gmail.com',
     pass: 'gbvs zkrq lujg aydh' // use App Password
@@ -107,7 +103,7 @@ const runBackup = () => {
       return;
     }
     console.log("command dump dir found");
-
+    
     const output = fs.createWriteStream(archivePath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
@@ -168,7 +164,7 @@ const runBackup = () => {
   });
 };
 // Runs at 10:00 PM every day
-cron.schedule('0 12 * * *', () => {
+cron.schedule('0 20 * * *', () => {
   console.log('Running scheduled backup at 10 PM...');
   runBackup();
 });
