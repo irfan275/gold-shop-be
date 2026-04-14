@@ -23,7 +23,7 @@ const CustomerSchema = new Schema({
         
     },
     civilId: {
-        type: Number,
+        type: String,
         unique: true,
     },
     type: {
